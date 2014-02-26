@@ -3525,6 +3525,9 @@
 		headerTrgEls = header.find('tr'); // original header is in its own table
 		headerSrcEls = headerCopy.find('tr');
 		headerCopy.find('th, td').removeAttr('tabindex');
+		
+		// Store the hidden header for use by other code
+		settings.nHiddenHeaderRow=headerSrcEls;
 	
 		if ( footer ) {
 			footerCopy = footer.clone().prependTo( table );
@@ -3734,6 +3737,14 @@
 		var padding = 'padding' + (browser.bScrollbarLeft ? 'Left' : 'Right' );
 		divHeaderInnerStyle[ padding ] = bScrolling ? barWidth+"px" : "0px";
 	
+		// If scrollX is enabled set the table width to auto so that expanding a column will not scrunch other cols
+		// It is necessary to set the width first to force it wide enough to scroll, then set to auto so that the cols
+		// aren't scrunchable
+		if ( scrollX !== "" ) {
+			divHeaderTable[0].style.width="auto";
+			tableStyle.width="auto";
+		}
+		
 		if ( footer ) {
 			divFooterTable[0].style.width = _fnStringToCss( iOuterWidth );
 			divFooterInner[0].style.width = _fnStringToCss( iOuterWidth );
@@ -12865,6 +12876,11 @@
 		 */
 		"nScrollFoot": null,
 	
+		/**
+		 * THEAD ROW container for the hidden sizer
+		 */
+		"nHiddenHeaderRow": null,
+		
 		/**
 		 * Last applied sort
 		 *  @type array
