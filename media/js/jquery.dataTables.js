@@ -3699,7 +3699,7 @@
 		// then we want to keep the width of the body and header 100% so overflow
 		// will work.  otherwise the container is as wide as the table, which won't
 		// force scrolling
-		if (scrollX==="") {
+		if (scrollX === "") {
 			divBodyStyle.width = _fnStringToCss( correction );
 			divHeaderStyle.width = _fnStringToCss( correction );
 		}
