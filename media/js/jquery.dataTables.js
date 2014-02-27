@@ -3526,6 +3526,8 @@
 		headerSrcEls = headerCopy.find('tr');
 		headerCopy.find('th, td').removeAttr('tabindex');
 		
+		// Store the visible header for use by other code (along the lines of settings.nScrollBody
+		settings.nVisibleHeaderRow=headerTrgEls;
 		// Store the hidden header for use by other code
 		settings.nHiddenHeaderRow=headerSrcEls;
 	
@@ -3667,7 +3669,8 @@
 	
 		// Sanity check that the table is of a sensible width. If not then we are going to get
 		// misalignment - try to prevent this by not allowing the table to shrink below its min width
-		if ( table.outerWidth() < sanityWidth )
+		var tableOuterWidth=table.outerWidth();
+		if ( tableOuterWidth <= sanityWidth )
 		{
 			// The min width depends upon if we have a vertical scrollbar visible or not */
 			correction = ((divBodyEl.scrollHeight > divBodyEl.offsetHeight ||
@@ -3691,10 +3694,15 @@
 		{
 			correction = '100%';
 		}
-	
-		// Apply to the container elements
-		divBodyStyle.width = _fnStringToCss( correction );
-		divHeaderStyle.width = _fnStringToCss( correction );
+
+		// Apply to the container elements if scrollX not enabled, if scrollX is enabled
+		// then we want to keep the width of the body and header 100% so overflow
+		// will work.  otherwise the container is as wide as the table, which won't
+		// force scrolling
+		if (scrollX==="") {
+			divBodyStyle.width = _fnStringToCss( correction );
+			divHeaderStyle.width = _fnStringToCss( correction );
+		}
 	
 		if ( footer ) {
 			settings.nScrollFoot.style.width = _fnStringToCss( correction );
@@ -3734,16 +3742,11 @@
 		// Figure out if there are scrollbar present - if so then we need a the header and footer to
 		// provide a bit more space to allow "overflow" scrolling (i.e. past the scrollbar)
 		var bScrolling = table.height() > divBodyEl.clientHeight || divBody.css('overflow-y') == "scroll";
-		var padding = 'padding' + (browser.bScrollbarLeft ? 'Left' : 'Right' );
+		// not sure why browser.bScrollbarLeft doesn't work, but it returns true
+		// for left even when the scrollbar is really on the right
+		//var padding = 'padding' + (browser.bScrollbarLeft ? 'Left' : 'Right' );
+		var padding = 'paddingRight';
 		divHeaderInnerStyle[ padding ] = bScrolling ? barWidth+"px" : "0px";
-	
-		// If scrollX is enabled set the table width to auto so that expanding a column will not scrunch other cols
-		// It is necessary to set the width first to force it wide enough to scroll, then set to auto so that the cols
-		// aren't scrunchable
-		if ( scrollX !== "" ) {
-			divHeaderTable[0].style.width="auto";
-			tableStyle.width="auto";
-		}
 		
 		if ( footer ) {
 			divFooterTable[0].style.width = _fnStringToCss( iOuterWidth );
@@ -12875,9 +12878,14 @@
 		 * DIV container for the footer scrolling table if scrolling
 		 */
 		"nScrollFoot": null,
+		
+		/**
+		 * THEAD ROW container for the visible header
+		 */
+		"nVisibleHeaderRow": null,
 	
 		/**
-		 * THEAD ROW container for the hidden sizer
+		 * THEAD ROW container for the hidden sizer header
 		 */
 		"nHiddenHeaderRow": null,
 		
