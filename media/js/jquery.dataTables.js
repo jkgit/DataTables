@@ -7230,7 +7230,7 @@
 				res = select( typeof a[j] === 'string' ? $.trim(a[j]) : a[j] );
 	
 				if ( res && res.length ) {
-					out.push.apply( out, res );
+					 out.push.apply( out, Array.prototype.slice.call(res) );
 				}
 			}
 		}
